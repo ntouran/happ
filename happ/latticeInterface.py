@@ -12,4 +12,3 @@ class HallamLatticeInterface(interfaces.Interface):
 
     def interactBOC(self, cycle=None):
         runLog.info("Making Hallam cross sections :o")
-

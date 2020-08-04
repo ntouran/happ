@@ -3,6 +3,7 @@ from armi.apps import App
 
 from happ.plugin import HallamPhysicsPlugin
 
+
 class HallamApp(App):
     def __init__(self):
         # activate all built-in plugins
