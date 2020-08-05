@@ -7,6 +7,8 @@ from happ import latticeInterface
 
 from happ.blocks import HallamBlock
 from happ import components 
+from happ.cli import summary 
+from happ.cli import makeXS 
 
 
 class HallamPhysicsPlugin(plugins.ArmiPlugin):
@@ -37,4 +39,12 @@ class HallamPhysicsPlugin(plugins.ArmiPlugin):
     def definParameters():
         """Register the custom parameters"""
         return {components.ScallopedHex: components.getScallopedHexParamDefs()}
+
+    @staticmethod
+    @plugins.HOOKIMPL
+    def defineEntryPoints():
+        return [
+            summary.HallamTables, 
+            #makeXS.MakeXSEntryPoint
+        ]
 
