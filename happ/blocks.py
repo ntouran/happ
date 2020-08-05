@@ -26,5 +26,5 @@ class HallamBlock(blocks.HexBlock):
     def getMaxArea(self):
         modClad = self.getComponent(Flags.MODERATOR|Flags.CLAD, exact=True)
         gap = self.getComponent(Flags.MODERATOR|Flags.COOLANT|Flags.GAP, exact=True)
-        largePitch = math.sqrt(3) * modClad.getPitchData()
-        return hexagon.area(largePitch + gap.getDimension("widthOuter"))
+        modPitch = modClad.getPitchData()+gap.getDimension("widthOuter")
+        return hexagon.area(math.sqrt(3)*modPitch)
