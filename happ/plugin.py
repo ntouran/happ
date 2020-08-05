@@ -6,9 +6,9 @@ from armi.reactor.assemblies import HexAssembly
 from happ import latticeInterface
 
 from happ.blocks import HallamBlock
-from happ import components 
-from happ.cli import summary 
-from happ.cli import makeXS 
+from happ import components
+from happ.cli import summary
+from happ.cli import makeXS
 
 
 class HallamPhysicsPlugin(plugins.ArmiPlugin):
@@ -44,7 +44,6 @@ class HallamPhysicsPlugin(plugins.ArmiPlugin):
     @plugins.HOOKIMPL
     def defineEntryPoints():
         return [
-            summary.HallamTables, 
-            #makeXS.MakeXSEntryPoint
+            summary.HallamTables,
+            # makeXS.MakeXSEntryPoint
         ]
-

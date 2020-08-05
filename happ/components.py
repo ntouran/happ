@@ -11,7 +11,7 @@ from armi.reactor.components import ShapedComponent
 SCALLOP_RADIUS = "sradius"
 SCALLOP_OFFSET = "offset"
 
-ONE_THIRD = 2.0*math.pi/3.0
+ONE_THIRD = 2.0 * math.pi / 3.0
 
 
 def getScallopedHexParamDefs():
@@ -23,8 +23,10 @@ def getScallopedHexParamDefs():
         location=parameters.ParamLocation.AVERAGE, saveToDB=True
     ) as pb:
         pb.defParam(SCALLOP_RADIUS, units="cm", description="Radius of scallop")
-        pb.defParam(SCALLOP_OFFSET, units="cm", 
-            description="Distance of prism off of line from scallop circle center"
+        pb.defParam(
+            SCALLOP_OFFSET,
+            units="cm",
+            description="Distance of prism off of line from scallop circle center",
         )
     return pDefs
 
@@ -72,7 +74,13 @@ class ScallopedHex(basicShapes.Hexagon):
         )
 
         self._linkAndStoreDimensions(
-            components, ip=ip, sradius=sradius, offset=offset, mult=mult, op=op, modArea=modArea
+            components,
+            ip=ip,
+            sradius=sradius,
+            offset=offset,
+            mult=mult,
+            op=op,
+            modArea=modArea,
         )
 
     def getComponentArea(self, cold=False):
@@ -102,7 +110,7 @@ class ScallopedHex(basicShapes.Hexagon):
         if ip:
             # recompute with different offset for "annular" scalloped hexes
             op = self.getDimension("op", cold=cold)
-            thickness = (op-ip)/2.0
+            thickness = (op - ip) / 2.0
             radius += thickness
             offset += thickness
             scallopArea = _computeScallopArea(radius, offset)
@@ -112,9 +120,10 @@ class ScallopedHex(basicShapes.Hexagon):
 
         return area
 
+
 def _computeScallopArea(radius, offset):
     """Compute how much area should be subtracted given a radius and offset in cm"""
     circleArea = math.pi * radius ** 2
-    angleInRadians = math.atan(offset/radius)
-    circleFraction = 2.0*(ONE_THIRD - angleInRadians)/ONE_THIRD
-    return circleFraction*circleArea
+    angleInRadians = math.atan(offset / radius)
+    circleFraction = 2.0 * (ONE_THIRD - angleInRadians) / ONE_THIRD
+    return circleFraction * circleArea

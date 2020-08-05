@@ -1,6 +1,7 @@
 from armi import materials
 from armi.utils.units import getTc
 
+
 class UMo(materials.FuelMaterial):
     """
     U-10Mo metallic fuel for Hallam
@@ -11,8 +12,10 @@ class UMo(materials.FuelMaterial):
         https://inldigitallibrary.inl.gov/sites/sti/sti/4702554.pdf (2010)
 
     """
+
     name = "UMo"
     enrichedNuclide = "U235"
+
     def setDefaultMassFracs(self):
         """Set mass fracs and density from Table 2 in Aronchick"""
         self.setMassFrac("MO", 0.1)
@@ -20,7 +23,6 @@ class UMo(materials.FuelMaterial):
         self.setMassFrac("U235", 0.036 * 0.9)
         self.setMassFrac("U238", (1.0 - 0.036) * 0.9)
         self.p.refDens = 17.1
-
 
     def applyInputParams(self, U235_wt_frac=None, *args, **kwargs):
         """Adjust uranium enrichment from input"""
@@ -45,12 +47,13 @@ class UMo(materials.FuelMaterial):
 
         """
         tempC = getTc(Tc, Tk)
-        return (tempC-20.) * 0.01372/476.0
+        return (tempC - 20.0) * 0.01372 / 476.0
 
     def heatCapacity(self, Tk=None, Tc=None):
         """Cp from Burkes in J/g-C"""
         Tc = getTc(Tc, Tk)
-        return 0.137+5.12e-5*Tc+1.99e-8*Tc**2
+        return 0.137 + 5.12e-5 * Tc + 1.99e-8 * Tc ** 2
+
 
 class SS304(materials.Material):
     """
@@ -58,7 +61,9 @@ class SS304(materials.Material):
 
     Information from Aronchick
     """
+
     name = "SS304"
+
     def setDefaultMassFracs(self):
         """Set mass fracs and density from Table 2 in Aronchick"""
         self.setMassFrac("FE", 0.74)
@@ -81,7 +86,8 @@ class SS304(materials.Material):
 
         """
         tempC = getTc(Tc, Tk)
-        return (tempC-20.) * 0.01159/400.0
+        return (tempC - 20.0) * 0.01159 / 400.0
+
 
 class Zircalloy2(materials.Material):
     """
@@ -89,7 +95,9 @@ class Zircalloy2(materials.Material):
 
     Information from Aronchick
     """
+
     name = "Zircalloy2"
+
     def setDefaultMassFracs(self):
         """Set mass fracs and density from Table 2 in Aronchick"""
         self.setMassFrac("ZR", 0.985)
@@ -106,7 +114,8 @@ class Zircalloy2(materials.Material):
 
         """
         tempC = getTc(Tc, Tk)
-        return (tempC-20.) * 0.00229/400.0
+        return (tempC - 20.0) * 0.00229 / 400.0
+
 
 class HastelloyX(materials.Material):
     """
@@ -115,10 +124,12 @@ class HastelloyX(materials.Material):
     Note that this material was NOT modeled in the original aronchick paper explicitly,
     but rather used specialized calculations.
     """
+
     name = "HastelloyX"
+
     def setDefaultMassFracs(self):
         """Info derived from haynes data sheet"""
-        self.setMassFrac("NI", 0.51) # 47, but lumping others in
+        self.setMassFrac("NI", 0.51)  # 47, but lumping others in
         self.setMassFrac("CR", 0.22)
         self.setMassFrac("FE", 0.18)
         self.setMassFrac("MO", 0.09)
@@ -133,9 +144,9 @@ class HastelloyX(materials.Material):
         # returning 0 actually triggers an error in ARMI
         return 0.0001
 
-
     def linearExpansionFactor(self, Tc, T0):
         return 0.0001
+
 
 class RareEarths(materials.Material):
     """
@@ -144,10 +155,12 @@ class RareEarths(materials.Material):
     Note that this material was NOT modeled in the original aronchick paper explicitly,
     but rather used specialized calculations.
     """
+
     name = "RareEarths"
+
     def setDefaultMassFracs(self):
         """Made up numbers for starters"""
-        self.setMassFrac("GD", 0.3) 
+        self.setMassFrac("GD", 0.3)
         self.setMassFrac("SM", 0.3)
         self.setMassFrac("O", 0.4)
         self.p.refDens = 4.22
@@ -160,7 +173,6 @@ class RareEarths(materials.Material):
         """
         # returning 0 actually triggers an error in ARMI
         return 0.0001
-
 
     def linearExpansionFactor(self, Tc, T0):
         return 0.0001

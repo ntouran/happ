@@ -5,15 +5,16 @@ from armi import materials
 
 class HallamTables(EntryPoint):
     """Make some input-checking tables to compare with old Hallam pubs."""
-    name="tables"
-    settingsArgument='required'
 
+    name = "tables"
+    settingsArgument = "required"
 
     def invoke(self):
         from armi import cases
+
         case = cases.Case(cs=self.cs)
         self._o = case.initializeOperator()
-        
+
         self._makeMaterialTable()
 
     def _makeMaterialTable(self):
@@ -22,7 +23,7 @@ class HallamTables(EntryPoint):
         Can be compared with Aronchik Table 2.
         """
         core = self._o.r.core
-        b = core.getFirstBlock(Flags.FUEL|Flags.INNER)
+        b = core.getFirstBlock(Flags.FUEL | Flags.INNER)
         matNames = getAllMaterials(b)
         areas = {}
         total = 0.0
@@ -30,12 +31,15 @@ class HallamTables(EntryPoint):
         for matName in matNames:
             comps = b.getComponentsOfMaterial(materialName=matName)
             area = sum([c.getArea() for c in comps])
-            areas[matName]=area
-            densities[matName]=comps[0].material.density3(Tc=comps[0].p.temperatureInC)
-            total+=area
+            areas[matName] = area
+            densities[matName] = comps[0].material.density3(
+                Tc=comps[0].p.temperatureInC
+            )
+            total += area
 
         for matName, area in sorted(areas.items()):
             print(f"{matName:20s} {densities[matName]:4.2f} {area/total:.6f}")
+
 
 def getAllMaterials(obj):
     """
@@ -45,8 +49,8 @@ def getAllMaterials(obj):
     -----
     Uses names instead of objects to keep them unique.
     """
-    mats=set()
+    mats = set()
     for child in obj.getChildren(deep=True):
-        if hasattr(child,'material'):
+        if hasattr(child, "material"):
             mats.add(child.material.name)
     return mats
