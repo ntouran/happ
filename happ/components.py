@@ -1,11 +1,17 @@
 """
 Hallam-specific components.
 """
+
+import math
+
 from armi.reactor import parameters
 from armi.reactor.components import basicShapes
 from armi.reactor.components import ShapedComponent
 
 SCALLOP_RADIUS = "sradius"
+SCALLOP_OFFSET = "offset"
+
+ONE_THIRD = 2.0*math.pi/3.0
 
 
 def getScallopedHexParamDefs():
@@ -17,6 +23,10 @@ def getScallopedHexParamDefs():
         location=parameters.ParamLocation.AVERAGE, saveToDB=True
     ) as pb:
         pb.defParam(SCALLOP_RADIUS, units="cm", description="Radius of scallop")
+        pb.defParam(SCALLOP_OFFSET, units="cm", 
+            description="Distance of prism off of line from scallop circle center"
+        )
+    return pDefs
 
 
 class ScallopedHex(basicShapes.Hexagon):
@@ -40,11 +50,12 @@ class ScallopedHex(basicShapes.Hexagon):
         material,
         Tinput,
         Thot,
-        ip=None,
+        ip=0.0,
         sradius=None,
+        offset=None,
         mult=None,
         modArea=None,
-        op=None,
+        op=0.0,
         isotopics=None,
         mergeWith=None,
         components=None,
@@ -61,12 +72,49 @@ class ScallopedHex(basicShapes.Hexagon):
         )
 
         self._linkAndStoreDimensions(
-            components, ip=ip, sradius=sradius, mult=mult, op=op, modArea=modArea
+            components, ip=ip, sradius=sradius, offset=offset, mult=mult, op=op, modArea=modArea
         )
 
     def getComponentArea(self, cold=False):
-        """The scallop radius represents a subtraction of 2 full circles"""
+        """
+        The scallop radius represents a subtraction of 6 thirds of circles.
+
+        This is rather complicated because you must also know how far offset the hexagon
+        is from the center of the circle that is being scalloped. This determines how much
+        less than six thirds of a circle (2 circles) should be subtracted off of each
+        corner. It takes some thinking, but it ends up being a trigonometry problem.
+
+        We will call this slide dimension the *offset*.
+
+        If an inner pitch is defined, then this makes a scalloped hex shell with
+        constant thickness = (op-ip)/2. The second circle's radius is a simple sum of the
+        original radius and the thickness.
+        """
         area = basicShapes.Hexagon.getComponentArea(self, cold=cold)
-        circleArea = math.pi * self.getDimension(SCALLOP_RADIUS, cold=cold) ** 2
+        ip = self.getDimension("ip", cold=cold)
         mult = self.getDimension("mult")
-        return area - circleArea * 6 * mult
+        radius = self.getDimension(SCALLOP_RADIUS, cold=cold)
+        offset = self.getDimension(SCALLOP_OFFSET, cold=cold)
+        scallopArea = _computeScallopArea(radius, offset)
+
+        area -= scallopArea * mult
+
+        if ip:
+            # recompute with different offset for "annular" scalloped hexes
+            op = self.getDimension("op", cold=cold)
+            thickness = (op-ip)/2.0
+            radius += thickness
+            offset += thickness
+            scallopArea = _computeScallopArea(radius, offset)
+            # addition here because overall formula is (hex1-scallop1) - (hex2-scallop2)
+            # or equivalently (hex1 - hex2) - scallop1 + scallop2
+            area += scallopArea * mult
+
+        return area
+
+def _computeScallopArea(radius, offset):
+    """Compute how much area should be subtracted given a radius and offset in cm"""
+    circleArea = math.pi * radius ** 2
+    angleInRadians = math.tan(offset/radius)
+    circleFraction = 2.0*angleInRadians/ONE_THIRD
+    return circleFraction*circleArea

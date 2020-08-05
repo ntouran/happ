@@ -23,6 +23,6 @@ class HallamBlock(blocks.HexBlock):
     """
 
     def getMaxArea(self):
-        moderator = self.getComponent(Flags.MODERATOR)
+        moderator = self.getComponent(Flags.MODERATOR, exact=True)
         largePitch = math.sqrt(3) * moderator.getPitchData()
         return hexagon.area(largePitch)

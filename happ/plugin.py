@@ -6,7 +6,7 @@ from armi.reactor.assemblies import HexAssembly
 from happ import latticeInterface
 
 from happ.blocks import HallamBlock
-from happ.components import ScallopedHex
+from happ import components 
 
 
 class HallamPhysicsPlugin(plugins.ArmiPlugin):
@@ -24,10 +24,17 @@ class HallamPhysicsPlugin(plugins.ArmiPlugin):
     @plugins.HOOKIMPL
     def defineBlockTypes():
         """Register the Hallam block type with ARMI"""
-        return [(ScallopedHex, HallamBlock)]
+        return [(components.ScallopedHex, HallamBlock)]
 
     @staticmethod
     @plugins.HOOKIMPL
     def defineAssemblyTypes():
         """Register the Hallam block type with Hex assemblies"""
         return [(HallamBlock, HexAssembly)]
+
+    @staticmethod
+    @plugins.HOOKIMPL
+    def definParameters():
+        """Register the custom parameters"""
+        return {components.ScallopedHex: components.getScallopedHexParamDefs()}
+
