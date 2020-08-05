@@ -115,6 +115,6 @@ class ScallopedHex(basicShapes.Hexagon):
 def _computeScallopArea(radius, offset):
     """Compute how much area should be subtracted given a radius and offset in cm"""
     circleArea = math.pi * radius ** 2
-    angleInRadians = math.tan(offset/radius)
-    circleFraction = 2.0*angleInRadians/ONE_THIRD
+    angleInRadians = math.atan(offset/radius)
+    circleFraction = 2.0*(ONE_THIRD - angleInRadians)/ONE_THIRD
     return circleFraction*circleArea

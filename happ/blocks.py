@@ -18,11 +18,13 @@ class HallamBlock(blocks.HexBlock):
     Hexagonal block with max area defined by scalloped moderator component.
 
     The side length of the large hex is exactly equal to the flat-to-flat pitch of the
-    moderator components. Thus, the pitch of the large hex is sqrt(3)*s = sqrt(3)*(the
-    pitch of the small hex).
+    perfect hexagons of the moderators (including gap and sheath), which should be 16.102"
+    nominally. Thus, the pitch of the large hex is sqrt(3)*s = sqrt(3)*(the pitch of the
+    small hex).
     """
 
     def getMaxArea(self):
-        moderator = self.getComponent(Flags.MODERATOR, exact=True)
-        largePitch = math.sqrt(3) * moderator.getPitchData()
-        return hexagon.area(largePitch)
+        modClad = self.getComponent(Flags.MODERATOR|Flags.CLAD, exact=True)
+        gap = self.getComponent(Flags.MODERATOR|Flags.COOLANT|Flags.GAP, exact=True)
+        largePitch = math.sqrt(3) * modClad.getPitchData()
+        return hexagon.area(largePitch + gap.getDimension("widthOuter"))
