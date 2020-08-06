@@ -1,6 +1,8 @@
 import armi
 from armi.apps import App
 
+from terrapower.physics.neutronics.dragon import DragonPlugin
+
 from happ.plugin import HallamPhysicsPlugin
 
 
@@ -11,6 +13,7 @@ class HallamApp(App):
 
         # register our plugin with the plugin manager
         self._pm.register(HallamPhysicsPlugin)
+        self._pm.register(DragonPlugin)
 
     @property
     def splashText(self):
