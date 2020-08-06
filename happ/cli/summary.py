@@ -33,7 +33,7 @@ class HallamTables(EntryPoint):
         areas = getAreaFracsByMaterial(b, matNames)
 
         for matName, area in sorted(areas.items()):
-            print(f"{matName:20s} {densities[matName]:5.2f} {area:.6f}")
+            print(f"{matName:20s} {densities[matName]:6.3f} {area:.6f}")
 
     def _makeNumberDensityTable(self):
         """

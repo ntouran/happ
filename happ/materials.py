@@ -39,16 +39,16 @@ class UMo(materials.FuelMaterial):
         Aronchick expands fuel from 17.1 at 21.1°C to 16.64 g/cc at fuel operating
         temperature (476 °C), so this should be consistent with that endpoint.
 
-        During ARMI's 2D thermal expansion, density is scaled by 1/(1+dLL)**2.
+        During ARMI's 3D thermal expansion, density is scaled by 1/(1+dLL)**3
         So we need
 
         .. math::
 
-            \frac{17.1}{16.64} = (1+dLL(T_H))^2
+            \frac{17.1}{16.64} = (1+dLL(T_H))^3
 
         """
         tempC = getTc(Tc, Tk)
-        return (tempC - 20.0) * 0.01372 / 476.0
+        return 100*(tempC - 20.0) * 0.00913 / 476.0
 
     def heatCapacity(self, Tk=None, Tc=None):
         """Cp from Burkes in J/g-C"""
@@ -83,11 +83,11 @@ class SS304(materials.Material):
 
         .. math::
 
-            \frac{7.9}{7.72} = (1+dLL(T_H))^2
+            \frac{7.9}{7.72} = (1+dLL(T_H))^3
 
         """
         tempC = getTc(Tc, Tk)
-        return (tempC - 20.0) * 0.01159 / 400.0
+        return 100*(tempC - 20.0) * 0.007712 / 400.0
 
 
 class Zircalloy2(materials.Material):
@@ -111,11 +111,11 @@ class Zircalloy2(materials.Material):
 
         .. math::
 
-            \frac{6.57}{6.52} = (1+dLL(T_H))^2
+            \frac{6.57}{6.52} = (1+dLL(T_H))^3
 
         """
         tempC = getTc(Tc, Tk)
-        return (tempC - 20.0) * 0.00229 / 400.0
+        return 100*(tempC - 20.0) * 0.00255 / 400.0
 
 
 class HastelloyX(materials.Material):
