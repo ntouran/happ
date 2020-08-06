@@ -1,4 +1,5 @@
 from armi import materials
+from armi.materials import graphite
 from armi.utils.units import getTc
 
 
@@ -176,3 +177,15 @@ class RareEarths(materials.Material):
 
     def linearExpansionFactor(self, Tc, T0):
         return 0.0001
+
+class Graphite(graphite.Graphite):
+    """
+    Graphite with reduced density to match Table 2 in Aronchick.
+    """
+
+    name = "Graphite"
+
+    def setDefaultMassFracs(self):
+        """Reduce density to comply with paper"""
+        graphite.Graphite.setDefaultMassFracs(self)
+        self.p.refDens = 1.67
