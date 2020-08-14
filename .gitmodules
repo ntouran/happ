@@ -1,0 +1,6 @@
+[submodule "armi"]
+	path = armi
+	url = https://github.com/terrapower/armi.git
+[submodule "plugins/terrapower-dragon"]
+	path = plugins/terrapower-dragon
+	url = https://github.com/terrapower/dragon-armi-plugin.git
