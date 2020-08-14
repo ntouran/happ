@@ -1,6 +1,8 @@
 This is a app that can model the Hallam Nuclear Power Facility
 
-It is based on the 1964 startup tests and models. 
+It is based on the 1964 startup tests and models of Aronchick, 1964.
+
+https://babel.hathitrust.org/cgi/pt?id=mdp.39015095005644&view=1up&seq=3
 
 Interestingly, they thought it had a negative power coeff but
 in reality it hadn't. Maybe with better models we can 

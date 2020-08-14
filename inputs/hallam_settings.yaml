@@ -1,0 +1,13 @@
+metadata:
+  version: 0.1.4
+settings:
+  burnSteps: 2
+  comment: The Hallam Nuclear Power Facility Startup core from 1964
+  dragonDataPath: \\albert\apps\dev\DRAGON\v5.0.5-11\data\draglibendfb8r0SHEM361
+  dragonExePath: \\albert\apps\dev\DRAGON\v5.0.5-11\bin\Dragon.exe
+  genXS: Neutron
+  loadingFile: hallam_bp.yaml
+  nCycles: 2
+  power: 250000000.0
+  verbosity: debug
+  xsKernel: DRAGON

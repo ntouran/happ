@@ -1,0 +1,12 @@
+geom: hex
+symmetry: third periodic
+lattice map: |
+    RR  RR
+      OD  RR
+    OC  OC  RR
+      IC  OB
+        IC  OA
+      IC  IC  RR
+        IC  OB
+      IC  IC  RR
+
