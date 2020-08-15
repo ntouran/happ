@@ -14,19 +14,26 @@ class HallamTables(EntryPoint):
         from armi import cases
 
         case = cases.Case(cs=self.cs)
-        self._o = case.initializeOperator()
+        o = self._o = case.initializeOperator()
 
-        self._makeMaterialTable()
-        self._makeNumberDensityTable()
+        core = self._o.r.core
+        b = core.getFirstBlock(Flags.FUEL | Flags.INNER)
+        self._makeMaterialTable(b)
+        self._makeNumberDensityTable(b)
+        print(b.getMaxArea())
 
-    def _makeMaterialTable(self):
+        basicFuelDesign = o.r.blueprints.blockDesigns["basic fuel"]
+        basicFuel = basicFuelDesign.construct(o.cs, o.r.blueprints, 0, 1, 10, "A", {})
+        self._makeMaterialTable(basicFuel)
+        self._makeNumberDensityTable(basicFuel)
+        print(basicFuel.getMaxArea())
+
+    def _makeMaterialTable(self, b):
         """
         Make a table that shows area fractions on a material basis.
 
         Can be compared with Aronchik Table 2.
         """
-        core = self._o.r.core
-        b = core.getFirstBlock(Flags.FUEL | Flags.INNER)
         matNames = getAllMaterials(b)
 
         densities = getMatDensities(b, matNames)
@@ -35,15 +42,13 @@ class HallamTables(EntryPoint):
         for matName, area in sorted(areas.items()):
             print(f"{matName:20s} {densities[matName]:6.3f} {area:.6f}")
 
-    def _makeNumberDensityTable(self):
+    def _makeNumberDensityTable(self, b):
         """
         Make a table of number densities by element. 
 
         C.f. Aronchick Table 3
         """
         elements = ("ZR", "C", "MO", "FE", "NI", "CR", "NA", "SN")
-        core = self._o.r.core
-        b = core.getFirstBlock(Flags.FUEL | Flags.INNER)
         ndens = b.getNumberDensities()
         totals = {}
         for el in elements:

@@ -15,7 +15,7 @@ each of which will become a circle. We'll start from the inside moving
 out. For example, in Aronchick Figure 5, the Helium is the first 
 region in the fuel cell is the center hole, which in our Hallam inputs is made 
 of the ``center tube`` and the ``center hole`` components. So for the basic fuel
-cellwe would have something like::
+cell in 1D (Figure 6) we would have something like::
 
     rings = [
         (center hole, center tube), 
@@ -24,6 +24,10 @@ cellwe would have something like::
         (moderator coolant, moderator clad), 
         (moderator, more moderator clad),
     ]
+
+But our hex global cases are conducive to making the 5/1 cell of figure 7. 
+This has control/void in the middle with some surrounding graphite/na/ss, and
+then has the equivalent of 5 basic fuel cells around it. 
 
 """
 from armi.reactor.converters import blockConverters

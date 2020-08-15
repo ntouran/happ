@@ -27,4 +27,12 @@ class HallamBlock(blocks.HexBlock):
         modClad = self.getComponent(Flags.MODERATOR | Flags.CLAD, exact=True)
         gap = self.getComponent(Flags.MODERATOR | Flags.COOLANT | Flags.GAP, exact=True)
         modPitch = modClad.getPitchData() + gap.getDimension("widthOuter")
-        return hexagon.area(math.sqrt(3) * modPitch)
+        mult = modClad.getDimension("mult")
+        if mult >= 1:
+            return hexagon.area(math.sqrt(3) * modPitch)
+        else:
+            # less than one moderator means that this is a basic fuel cell,
+            # not a 5/1 cell. Max area is way different in these cells.
+            # It is an equiliateral triangle with side length equal to
+            # the moderator pitch.
+            return math.sqrt(3) * modPitch ** 2 / 4

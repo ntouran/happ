@@ -1,13 +1,11 @@
 blocks:
-    inner fuel: &block_inner_fuel
+    basic fuel: &block_basic_fuel
         fuel: &fuel_bundle
             # There are 18 fuel pins in each process tube. 
-            # In the 5/1 cell, there are 5 full process tubes of fuel
-            # So the multiplicity of this and associated things is 18*5 = 50+40=90
             shape: Circle
             material: UMo
             od: 1.4986 
-            mult: 90
+            mult: 18
             # The avg fuel temperature is 890 °F
             Thot: 476.67
             Tinput: 20.0
@@ -27,25 +25,16 @@ blocks:
             mult: fuel.mult
             Tinput: 20.0
             Thot: 414.0
-        spacers: &fuel_spacers
-            # spacers at 1 ft intervals, eq area= 0.0285 in²
-            shape: Circle
-            od: 0.2419
-            material: SS304
-            mult: 1
-            Tinput: 20.0
-            Thot: 400.0
         process tube: &process_tube
             material: Zircalloy2
             shape: Circle
             od: 11.176
             id: 10.668
-            mult: 5
+            mult: 1
             Tinput: 20.0
             Thot: 400.0
         moderator:  &moderator
-            # the way the hex cell cuts the moderator blocks exactly equals 3 mod blocks
-            # process tube wholes are 4.4" diamater, or 2.2" radius
+            # process tube holes are 4.4" diamater, or 2.2" radius
             material: Graphite
             shape: ScallopedHex
             # "The graphite is a prism of hexagonal XS measuring 16 in across flats"
@@ -65,7 +54,8 @@ blocks:
             # "The average moderator temperature is 850 °F"
             Tinput: 20.0
             Thot: 454.44
-            mult: 3
+            # 3 60 degree sectors is 50% of 1 moderator
+            mult: 0.5
         moderator clad:  &moderator_sheath
             # moderator is sheathed in 0.016"-thick SS304
             material: SS304
@@ -95,11 +85,12 @@ blocks:
             # tubes (which is 4.4") plus 2x the sodium thickness (0.160"). 
             # So, 11.62429
             # There are 9 of these straight sections per 5/1 unit cell.
+            # But 3/2 in the basic fuel cell
             material: Sodium
             shape: Rectangle
             widthOuter: 0.4064
             lengthOuter: 11.62429
-            mult: 9
+            mult: 1.5
             Tinput: 20.0
             Thot: 414.0
         moderator coolant annulus: &moderator_coolant_annulus
@@ -110,7 +101,7 @@ blocks:
             shape: Circle
             id: process tube.od
             od: 11.9888
-            mult: 5
+            mult: 1
             Tinput: 20.0
             Thot: 414.0
         center tube: &center_tube
@@ -119,14 +110,14 @@ blocks:
             material: SS304
             od: 1.7272
             id: 1.6256
-            mult: 5
+            mult: 1
             Tinput: 20.0
             Thot: 400.0
         center hole: &center_hole
             # the void in the center tube
             shape: Circle
             material: Void
-            mult: 5
+            mult: 1
             Tinput: 20.0
             Thot: 400.0
             od: center tube.id
@@ -135,6 +126,49 @@ blocks:
             material: Sodium
             Tinput: 20.0
             Thot: 414.0
+    inner fuel: &block_inner_fuel
+        fuel: 
+            # There are 18 fuel pins in each process tube. 
+            # In the 5/1 cell, there are 5 full process tubes of fuel
+            # So the multiplicity of this and associated things is 18*5 = 50+40=90
+            <<: *fuel_bundle
+            mult: 90
+        clad: 
+            <<: *fuel_clad
+        bond:  
+            <<: *fuel_bond
+        spacers: &fuel_spacers
+            # spacers at 1 ft intervals, eq area= 0.0285 in²
+            shape: Circle
+            od: 0.2419
+            material: SS304
+            mult: 1
+            Tinput: 20.0
+            Thot: 400.0
+        process tube: 
+            <<: *process_tube
+            mult: 5
+        moderator:  
+            # the way the hex cell cuts the moderator blocks exactly equals 3 mod blocks
+            <<: *moderator
+            mult: 3
+        moderator clad:  
+            <<: *moderator_sheath
+            mult: moderator.mult
+        moderator coolant gap: 
+            <<: *moderator_coolant_edge
+            mult: 9
+        moderator coolant annulus: 
+            <<: *moderator_coolant_annulus
+            mult: 5
+        center tube: 
+            <<: *center_tube
+            mult: 5
+        center hole: 
+            <<: *center_hole
+            mult: 5
+        coolant: 
+            <<: *coolant
         cr thimble:  &cr_thimble
             material: Zircalloy2
             shape: Circle
@@ -163,16 +197,21 @@ blocks:
             <<: *process_tube
         moderator: 
             <<: *moderator
+            mult: 3
         moderator clad:
             <<: *moderator_sheath
         moderator coolant gap:
             <<: *moderator_coolant_edge
+            mult: 9
         moderator coolant annulus:
             <<: *moderator_coolant_annulus
+            mult: 5
         center tube:
             <<: *center_tube
+            mult: 5
         center hole:
             <<: *center_hole
+            mult: 5
         coolant:
             <<: *coolant
         cr thimble:
@@ -228,12 +267,15 @@ blocks:
             mult: 3.3333
         moderator: 
             <<: *moderator
+            mult: 3
         moderator clad: 
             <<: *moderator_sheath
         moderator coolant gap:
             <<: *moderator_coolant_edge
+            mult: 9
         moderator coolant annulus:
             <<: *moderator_coolant_annulus
+            mult: 5
         center tube:
             <<: *center_tube
             mult: 1.6666
@@ -303,12 +345,15 @@ blocks:
             mult: 5.666
         moderator: 
             <<: *moderator
+            mult: 3
         moderator clad:
             <<: *moderator_sheath
         moderator coolant gap:
             <<: *moderator_coolant_edge
+            mult: 9
         moderator coolant annulus:
             <<: *moderator_coolant_annulus
+            mult: 5
         center tube:
             <<: *center_tube
             mult: 4.3333
@@ -348,12 +393,15 @@ blocks:
             mult: 5.3333
         moderator: 
             <<: *moderator
+            mult: 3
         moderator clad:
             <<: *moderator_sheath
         moderator coolant gap:
             <<: *moderator_coolant_edge
+            mult: 9
         moderator coolant annulus:
             <<: *moderator_coolant_annulus
+            mult: 5
         center tube:
             <<: *center_tube
             mult: 4.3333
@@ -394,12 +442,15 @@ blocks:
             mult: 3.6666
         moderator: 
             <<: *moderator
+            mult: 3
         moderator clad:
             <<: *moderator_sheath
         moderator coolant gap:
             <<: *moderator_coolant_edge
+            mult: 9
         moderator coolant annulus:
             <<: *moderator_coolant_annulus
+            mult: 5
         center tube:
             <<: *center_tube
             mult: 2.6666
@@ -466,6 +517,7 @@ blocks:
             mult: 6
         moderator coolant annulus:
             <<: *moderator_coolant_annulus
+            mult: 5
         center tube:
             <<: *center_tube
             mult: 0.625

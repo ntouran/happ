@@ -33,11 +33,6 @@ buildPath()
 
 import armi
 from armi.cli import ArmiCLI
-from armi import materials
-
-# set app-specific material lookup order to prioritize the Hallam materials.
-materials.setMaterialNamespaceOrder(["happ.materials", "armi.materials"])
-
 from happ import app
 
 # if running this as an app, we must register the app
