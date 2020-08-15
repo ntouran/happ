@@ -4,16 +4,18 @@ blocks:
             # There are 18 fuel pins in each process tube. 
             shape: Circle
             material: UMo
+            # od is 0.59"
             od: 1.4986 
             mult: 18
             # The avg fuel temperature is 890 °F
             Thot: 476.67
             Tinput: 20.0
         clad: &fuel_clad
+            # cladding thickness is 0.01", so OD should be id + 2*that 
             shape: Circle
             material: SS304
             od: 1.6764
-            id: 1.6252
+            id: 1.6256
             mult: fuel.mult
             Tinput: 20.0
             Thot: 400.0
@@ -60,6 +62,7 @@ blocks:
             # moderator is sheathed in 0.016"-thick SS304
             material: SS304
             shape: ScallopedHex
+            # flat-to-flat should be 16.102 - 0.16
             op: 40.49268
             # subtract 2x the sheath thickness to make it "annular"
             # Do not link with moderator.op because it thermally expands too far
@@ -68,10 +71,13 @@ blocks:
             # Just half the gap this time,  0.16/2"
             offset: 0.2032
             # The circle radius is the process tube radius + the gap
+            # 4.4/2+0.16
             sradius: 5.9944
             # "The average moderator temperature is 850 °F"
             # Attempt to disable thermal expansion for the sheath
             # so we stay consistent with other blocks (e.g. plug)
+            # because this is the component that sets the pitch.
+            # (alternatively we could hard code the pitch in HallamBlock)
             Tinput: 454.44
             Thot: 454.44
             mult: moderator.mult
@@ -80,12 +86,14 @@ blocks:
             # "There is a nominal 0.160" gap between edges of adjacent moderator elements"
             # See also: moderator coolant annulus
             # Moderator cell hex pitch is 16.102"
-            # In hexagons, p = sqrt(3)*s so the side length is 23.613095 cm
-            # The length of these sections will be that minus the diameter of the process
-            # tubes (which is 4.4") plus 2x the sodium thickness (0.160"). 
-            # So, 11.62429
+            # In a basic fuel cell, the distance from the base to the center can
+            # be calculated with a 30-60-90 triangle with base=8.051". 
+            # So tan(30) = H/8.051 and H = 4.648247017" 
+            # The length of this section in a fuel cell is that - 4.4"/2 - 0.16" 
+            # or 5.8121474 cm. A full length one then is  11.624295 cm
+            
             # There are 9 of these straight sections per 5/1 unit cell.
-            # But 3/2 in the basic fuel cell
+            # And 3/2 in the basic fuel cell
             material: Sodium
             shape: Rectangle
             widthOuter: 0.4064
@@ -108,6 +116,7 @@ blocks:
             # empty tube in the middle of each fuel cluster
             shape: Circle
             material: SS304
+            # 0.68" OD, 0.020" thickness
             od: 1.7272
             id: 1.6256
             mult: 1
@@ -117,7 +126,7 @@ blocks:
             # the void in the center tube
             shape: Circle
             material: Void
-            mult: 1
+            mult: center tube.mult
             Tinput: 20.0
             Thot: 400.0
             od: center tube.id

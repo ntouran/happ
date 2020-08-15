@@ -47,6 +47,8 @@ class HallamTables(EntryPoint):
         print(tabulate.tabulate(table, headers=header))
         print(bFiveOne.getMaxArea())
 
+        print(getMatDensities(basicFuel, matNames))
+
     def _compareNumberDensities(self):
         bFiveOne, basicFuel = self._getUnitCells()
         self._makeNumberDensityTable(bFiveOne)
