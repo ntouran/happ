@@ -48,7 +48,7 @@ class UMo(materials.FuelMaterial):
 
         """
         tempC = getTc(Tc, Tk)
-        return 100*(tempC - 20.0) * 0.00913 / 476.0
+        return 100 * (tempC - 20.0) * 0.00913 / 476.0
 
     def heatCapacity(self, Tk=None, Tc=None):
         """Cp from Burkes in J/g-C"""
@@ -87,17 +87,17 @@ class SS304(materials.Material):
 
         """
         tempC = getTc(Tc, Tk)
-        return 100*(tempC - 20.0) * 0.007712 / 400.0
+        return 100 * (tempC - 20.0) * 0.007712 / 400.0
 
 
-class Zircalloy2(materials.Material):
+class Zircaloy2(materials.Material):
     """
-    Zircalloy 2 for Hallam
+    Zircaloy 2 for Hallam
 
     Information from Aronchick
     """
 
-    name = "Zircalloy2"
+    name = "Zircaloy2"
 
     def setDefaultMassFracs(self):
         """Set mass fracs and density from Table 2 in Aronchick"""
@@ -115,7 +115,7 @@ class Zircalloy2(materials.Material):
 
         """
         tempC = getTc(Tc, Tk)
-        return 100*(tempC - 20.0) * 0.00255 / 400.0
+        return 100 * (tempC - 20.0) * 0.00255 / 400.0
 
 
 class HastelloyX(materials.Material):
@@ -177,6 +177,7 @@ class RareEarths(materials.Material):
 
     def linearExpansionFactor(self, Tc, T0):
         return 0.0001
+
 
 class Graphite(graphite.Graphite):
     """

@@ -1,3 +1,5 @@
+import tabulate
+
 from armi.cli.entryPoint import EntryPoint
 from armi.reactor.flags import Flags
 from armi import materials
@@ -14,33 +16,50 @@ class HallamTables(EntryPoint):
         from armi import cases
 
         case = cases.Case(cs=self.cs)
-        o = self._o = case.initializeOperator()
+        self.o = case.initializeOperator()
 
-        core = self._o.r.core
-        b = core.getFirstBlock(Flags.FUEL | Flags.INNER)
-        self._makeMaterialTable(b)
-        self._makeNumberDensityTable(b)
-        print(b.getMaxArea())
+        self._compareVolumeFractions()
+        self._compareNumberDensities()
 
-        basicFuelDesign = o.r.blueprints.blockDesigns["basic fuel"]
-        basicFuel = basicFuelDesign.construct(o.cs, o.r.blueprints, 0, 1, 10, "A", {})
-        self._makeMaterialTable(basicFuel)
-        self._makeNumberDensityTable(basicFuel)
+        self.o = None
+
+    def _compareVolumeFractions(self):
+        """Make table(s) to comparing our unit cell vol fracs to Aronchick's Table 2"""
+        bFiveOne, basicFuel = self._getUnitCells()
+        aronchickBasicFracs = (0.044491, 0.007841, 0.11066, 0.01209, 0.82200, 0.002910)
+        aronchickFiveOneFracs = (0.037076, 0.007183, 0.10492, 0.01167, 0.82200, 0.01715)
+
+        matNames = ("UMo", "SS304", "Sodium", "Zircaloy2", "Graphite", "Void")
+        header = ["Material", "Aronchick", "ARMI", "diff (%)"]
+        fracs = getAreaFracsByMaterial(basicFuel, matNames)
+        print("Unit Cell Comparison for Basic Fuel Cell")
+        table = []
+        for mat, ref in zip(matNames, aronchickBasicFracs):
+            table.append((mat, ref, fracs[mat], 100 * (fracs[mat] - ref) / ref))
+        print(tabulate.tabulate(table, headers=header))
         print(basicFuel.getMaxArea())
 
-    def _makeMaterialTable(self, b):
-        """
-        Make a table that shows area fractions on a material basis.
+        print("\nUnit Cell Comparison for 5/1 Fuel Cell")
+        fracs = getAreaFracsByMaterial(bFiveOne, matNames)
+        table = []
+        for mat, ref in zip(matNames, aronchickFiveOneFracs):
+            table.append((mat, ref, fracs[mat], 100 * (fracs[mat] - ref) / ref))
+        print(tabulate.tabulate(table, headers=header))
+        print(bFiveOne.getMaxArea())
 
-        Can be compared with Aronchik Table 2.
-        """
-        matNames = getAllMaterials(b)
+    def _compareNumberDensities(self):
+        bFiveOne, basicFuel = self._getUnitCells()
+        self._makeNumberDensityTable(bFiveOne)
+        self._makeNumberDensityTable(basicFuel)
 
-        densities = getMatDensities(b, matNames)
-        areas = getAreaFracsByMaterial(b, matNames)
-
-        for matName, area in sorted(areas.items()):
-            print(f"{matName:20s} {densities[matName]:6.3f} {area:.6f}")
+    def _getUnitCells(self):
+        core = self.o.r.core
+        bFiveOne = core.getFirstBlock(Flags.FUEL | Flags.INNER)
+        basicFuelDesign = self.o.r.blueprints.blockDesigns["basic fuel"]
+        basicFuel = basicFuelDesign.construct(
+            self.o.cs, self.o.r.blueprints, 0, 1, 10, "A", {}
+        )
+        return bFiveOne, basicFuel
 
     def _makeNumberDensityTable(self, b):
         """

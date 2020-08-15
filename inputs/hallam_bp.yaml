@@ -26,7 +26,7 @@ blocks:
             Tinput: 20.0
             Thot: 414.0
         process tube: &process_tube
-            material: Zircalloy2
+            material: Zircaloy2
             shape: Circle
             od: 11.176
             id: 10.668
@@ -170,7 +170,7 @@ blocks:
         coolant: 
             <<: *coolant
         cr thimble:  &cr_thimble
-            material: Zircalloy2
+            material: Zircaloy2
             shape: Circle
             id: 9.0424
             od: 9.51484
