@@ -97,6 +97,11 @@ class ScallopedHex(basicShapes.Hexagon):
         If an inner pitch is defined, then this makes a scalloped hex shell with
         constant thickness = (op-ip)/2. The second circle's radius is a simple sum of the
         original radius and the thickness.
+
+        .. warning:: If you fail to adjust the radius and offset of the inner
+            hex, you get area fractions that match Aronchick to 0.6% or less. If
+            you include them you are off on SS304 by 20%. I believe Aronchick
+            was wrong in this case. We can do sensitivity studies later.
         """
         area = basicShapes.Hexagon.getComponentArea(self, cold=cold)
         ip = self.getDimension("ip", cold=cold)
@@ -108,9 +113,11 @@ class ScallopedHex(basicShapes.Hexagon):
         area -= scallopArea * mult
 
         if ip:
-            # recompute with different offset for "annular" scalloped hexes
+            # recompute scallops different offset for "annular" scalloped hexes
+            # inner hexagon itself is already subtracted off by the parent class
             op = self.getDimension("op", cold=cold)
             thickness = (op - ip) / 2.0
+            # compute the scallops of the smaller inner hexagon
             radius += thickness
             offset += thickness
             scallopArea = _computeScallopArea(radius, offset)
@@ -122,8 +129,13 @@ class ScallopedHex(basicShapes.Hexagon):
 
 
 def _computeScallopArea(radius, offset):
-    """Compute how much area should be subtracted given a radius and offset in cm"""
+    """
+    Compute how much area should be subtracted given a radius and offset in cm.
+
+    You really need to draw the triangles here to see what's going on. 
+    """
     circleArea = math.pi * radius ** 2
     angleInRadians = math.atan(offset / radius)
+    # what fraction of 6/3 (2) circles is subtracted off?
     circleFraction = 2.0 * (ONE_THIRD - angleInRadians) / ONE_THIRD
     return circleFraction * circleArea

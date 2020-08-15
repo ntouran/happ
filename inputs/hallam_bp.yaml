@@ -11,6 +11,7 @@ blocks:
             Thot: 476.67
             Tinput: 20.0
         clad: &fuel_clad
+            # 0.66" OD
             # cladding thickness is 0.01", so OD should be id + 2*that 
             shape: Circle
             material: SS304
@@ -33,6 +34,15 @@ blocks:
             od: 11.176
             id: 10.668
             mult: 1
+            Tinput: 20.0
+            Thot: 400.0
+        spacers: &fuel_spacers
+            # spacers at 1 ft intervals, eq area= 0.0285 in²/process tube
+            # A = pi R² -> OD = 0.48385
+            shape: Circle
+            od: 0.48385
+            material: SS304
+            mult: process tube.mult
             Tinput: 20.0
             Thot: 400.0
         moderator:  &moderator
@@ -146,17 +156,11 @@ blocks:
             <<: *fuel_clad
         bond:  
             <<: *fuel_bond
-        spacers: &fuel_spacers
-            # spacers at 1 ft intervals, eq area= 0.0285 in²
-            shape: Circle
-            od: 0.2419
-            material: SS304
-            mult: 1
-            Tinput: 20.0
-            Thot: 400.0
         process tube: 
             <<: *process_tube
             mult: 5
+        spacers: 
+            <<: *fuel_spacers
         moderator:  
             # the way the hex cell cuts the moderator blocks exactly equals 3 mod blocks
             <<: *moderator
