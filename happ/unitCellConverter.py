@@ -30,9 +30,101 @@ This has control/void in the middle with some surrounding graphite/na/ss, and
 then has the equivalent of 5 basic fuel cells around it. 
 
 """
+from dataclasses import dataclass
+from typing import List
+
 from armi.reactor.converters import blockConverters
+from armi.reactor.components import Component
+from armi.reactor import composites
+from armi.reactor import blocks
+from armi.reactor import components
+
+
+@dataclass
+class RingSpec:
+    """Data needed to define a ring in a ring-converted block."""
+
+    components: List[Component]
+    innerDiamCm: float = 0.0
+    heightCm: float = 1.0
+    fraction: float = 1.0
 
 
 class HallamUnitCellConverter(blockConverters.BlockConverter):
+    def __init__(self, sourceBlock, quiet=False):
+        blockConverters.BlockConverter.__init__(self, sourceBlock, quiet=quiet)
+        self.ringSpecs = []
+
+        self.convertedBlock = blocks.ThRZBlock(
+            name=sourceBlock.name + "-cyl", height=sourceBlock.getHeight()
+        )
+        self.convertedBlock.setLumpedFissionProducts(
+            sourceBlock.getLumpedFissionProductCollection()
+        )
+        self._buildRingSpecs()
+
+    def _buildRingSpecs(self):
+        """
+        Build ring specifications for Hallam fuel cell.
+
+        Height and inner radius will be added during conversion.
+        """
+        sbn = self._sourceBlock.getComponentByName
+        self.ringSpecs = [
+            RingSpec(components=[sbn("center hole"),]),
+            RingSpec(
+                components=[
+                    sbn("center tube"),
+                    sbn("spacers"),
+                    sbn("fuel"),
+                    sbn("clad"),
+                    sbn("bond"),
+                    sbn("coolant"),
+                ]
+            ),
+            RingSpec(components=[sbn("process tube")]),
+            RingSpec(
+                components=[sbn("moderator coolant annulus"), sbn("moderator clad")]
+            ),
+            RingSpec(components=[sbn("moderator"), sbn("moderator coolant gap")]),
+        ]
+
     def convert(self):
-        pass
+        innerDiam = 0.0
+        height = self._sourceBlock.getHeight()
+        for ringSpec in self.ringSpecs:
+            ringSpec.innerDiamCm = innerDiam
+            ringSpec.heightCm = height
+            ring = _makeRing(ringSpec)
+            self.convertedBlock.add(ring)
+            innerDiam = ring.getDimension("od")
+        return self.convertedBlock
+
+
+def _makeRing(ringSpec: RingSpec):
+    """Given a ring specification, make a circle component representing it."""
+
+    blender = blocks.Block(name="blender")
+    for c in ringSpec.components:
+        blender.add(c)
+
+    area = blender.getVolume() / ringSpec.heightCm * ringSpec.fraction
+
+    tempInC = sum(c.temperatureInC for c in ringSpec.components) / len(
+        ringSpec.components
+    )
+
+    outerDiamCm = blockConverters.getOuterDiamFromIDAndArea(ringSpec.innerDiamCm, area)
+    ring = components.Circle(
+        "convertedRing",
+        "Custom",
+        tempInC,
+        tempInC,
+        od=outerDiamCm,
+        id=ringSpec.innerDiamCm,
+        mult=1,
+    )
+    nDensities = blender.getNumberDensities()
+    nDensities = {k: v * ringSpec.fraction for k, v in nDensities.items()}
+    ring.setNumberDensities(nDensities)
+    return ring

@@ -5,6 +5,8 @@ from armi.reactor.flags import Flags
 from armi import materials
 from armi.nucDirectory import nuclideBases as nb
 
+from happ import unitCellConverter
+
 
 class HallamTables(EntryPoint):
     """Make some input-checking tables to compare with old Hallam pubs."""
@@ -20,6 +22,7 @@ class HallamTables(EntryPoint):
 
         self._compareVolumeFractions()
         self._compareNumberDensities()
+        self._makeFuelCellTable4()
 
         self.o = None
 
@@ -48,6 +51,35 @@ class HallamTables(EntryPoint):
         print(bFiveOne.getMaxArea())
 
         print(getMatDensities(basicFuel, matNames))
+
+    def _makeFuelCellTable4(self):
+        """Make Table 4 showing the basic fuel cell regions"""
+        _bFiveOne, basicFuel = self._getUnitCells()
+        conv = unitCellConverter.HallamUnitCellConverter(basicFuel)
+        bs2 = conv.convert()
+        print("Basic fuel Cell Materials (c.f. Table 4)")
+        table = []
+        for ri, ring in enumerate(bs2):
+            mats = getAllMaterials(ring)
+            fracs = [getAreaFracsByMaterial(ring, mats)[mat] for mat in mats]
+            row = [
+                ri + 1,
+                f"{ring.getArea()/(2.54**2):5.3f}",
+                f"{ring.getDimension('id')/2.0:5.3f}",
+                "\n".join(mats),
+                "\n".join([f"{frac:5.4f}" for frac in fracs]),
+            ]
+            table.append(row)
+
+        header = [
+            "Region",
+            "Area (in^2)",
+            "Radius (cm)",
+            "Materials",
+            "vol frac of mats",
+        ]
+
+        print(tabulate.tabulate(table, headers=header))
 
     def _compareNumberDensities(self):
         bFiveOne, basicFuel = self._getUnitCells()

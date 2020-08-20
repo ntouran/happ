@@ -118,8 +118,8 @@ class ScallopedHex(basicShapes.Hexagon):
             op = self.getDimension("op", cold=cold)
             thickness = (op - ip) / 2.0
             # compute the scallops of the smaller inner hexagon
-            radius += thickness
-            offset += thickness
+            # radius += thickness
+            # offset += thickness
             scallopArea = _computeScallopArea(radius, offset)
             # addition here because overall formula is (hex1-scallop1) - (hex2-scallop2)
             # or equivalently (hex1 - hex2) - scallop1 + scallop2
