@@ -836,7 +836,6 @@ nuclide flags:
     PU240: {burn: true, xs: true}
     PU241: {burn: true, xs: true}
     PU242: {burn: true, xs: true}
-    AM241: {burn: true, xs: true}
     AM242: {burn: true, xs: true}
     AM243: {burn: true, xs: true}
     CM242: {burn: true, xs: true}

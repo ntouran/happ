@@ -106,7 +106,7 @@ def _makeRing(ringSpec: RingSpec):
 
     blender = blocks.Block(name="blender")
     for c in ringSpec.components:
-        blender.add(c)
+        blender.add(components.UnshapedComponent.fromComponent(c))
 
     area = blender.getVolume() / ringSpec.heightCm * ringSpec.fraction
 
@@ -124,6 +124,8 @@ def _makeRing(ringSpec: RingSpec):
         id=ringSpec.innerDiamCm,
         mult=1,
     )
+    # here we lose a bit of identity of the constituents.
+    # it would be a bit nicer if we could add components to components
     nDensities = blender.getNumberDensities()
     nDensities = {k: v * ringSpec.fraction for k, v in nDensities.items()}
     ring.setNumberDensities(nDensities)
