@@ -3,4 +3,10 @@
 .project
 .pydevproject
 **/_build
+inputs/dragon-*
+inputs/*.h5
+inputs/*.jpg
+inputs/*.png
+inputs/ISO*
+
 

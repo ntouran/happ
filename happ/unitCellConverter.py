@@ -35,7 +35,6 @@ from typing import List
 
 from armi.reactor.converters import blockConverters
 from armi.reactor.components import Component
-from armi.reactor import composites
 from armi.reactor import blocks
 from armi.reactor import components
 
@@ -51,6 +50,8 @@ class RingSpec:
 
 
 class HallamUnitCellConverter(blockConverters.BlockConverter):
+    """Hallam-specific unit cell converter that grabs key components to make 1-D unit cells."""
+
     def __init__(self, sourceBlock, quiet=False):
         blockConverters.BlockConverter.__init__(self, sourceBlock, quiet=quiet)
         self.ringSpecs = []
