@@ -1,0 +1,73 @@
+*----
+*  1-D HALLAM CROSS SECTION GENERATION DRAGON Template
+*----
+LINKED_LIST
+  LIBRARY HALLAMS HALLAM TRACKS TRACK PIJ FLUX EDITION ;
+MODULE
+   LIB: GEO: SYBILT: SHI: ASM: FLU: EDI: END: ;
+*----
+*  No depletion performed.
+*----
+LIBRARY := LIB: ::
+  ANIS 2
+  NMIX {{mixtures|length}} CTRA WIMS
+  ! Only 8 chars allowed. Actual data used: {{ nucDataComment }}
+  MIXS LIB: DRAGON FIL: {{ nucData }}
+{% for mixture in mixtures %}
+  MIX {{loop.index}} {{"{:5f}".format(mixture.getTempInK())}}
+{%- for mixNuc in mixture.getMixVector() -%}
+{{"\n   {:>5}{:2} = {:>7}   {:.6E} {:>3}".format(
+mixNuc.armiName, mixNuc.xsid, mixNuc.dragName, mixNuc.ndens, mixNuc.selfshield)}}
+{%- endfor -%}
+{% endfor %}
+  ;
+*----
+*  Geometry HALLAMS : annular cell for self-shielding 
+*           HALLAM : annular cell with finer mesh for transport
+*----
+HALLAMS := GEO: :: TUBE {{mixtures|length}}
+  R+ REFL RADIUS 0.0 {% for radius in radii %}{{"{:.5f}".format(radius)}} {% endfor %}
+  MIX {% for mixture in mixtures %} {{loop.index}} {% endfor %};
+HALLAM := GEO: HALLAMS ::
+  SPLITR {% for split in geomsplits %} {{ split}} {% endfor %};
+*----
+*  Tracking calculation for Self-Shielding
+*----
+TRACKS := SYBILT: HALLAMS  ::
+  TITLE '1D Self-Shielding Tracking Calculation' ;
+*----
+* Self Shielding Calculation
+*    * LEVEL 2 applies Nordheim (PIC) distributed self-shielding mode and
+*      Riemann integration method. LEVEL 0 is not compatible with the current
+*      implementation of self shielding index in this template, which is setting
+*      all inrs=1. ALST2F: A IS RANK-DEFICIENT will appear during SHI:. 
+*      Not applying a inrs to a nuclide with density greater than E-04, will all the
+*      calculation to run on LEVEL 0.
+*----
+LIBRARY := SHI: LIBRARY TRACKS :: EDIT 0 NOLJ LEVEL 2 ;
+*----
+* Tracking calculation for flux.
+*    * Note this could have used the same output as the last SYBILT call since the 
+*      settings are the same, but in many cases, settings are different for the self
+*      shielding tracking calculation to reduce the self shielding calculation time.
+*----
+TRACK := SYBILT: HALLAM  ::
+  TITLE '1D Transport Tracking Calculation' ;
+*----
+* Assembly Calculation
+*----
+PIJ := ASM: LIBRARY TRACK ;
+*----
+* Flux Calculation
+*----
+FLUX := FLU: PIJ LIBRARY TRACK :: TYPE {% if buckling -%} B B1 SIGS {%- else -%} K {%- endif %} ;
+*----
+* Edition Calculation
+*    * EDIT 4 will print fairly rich cross section information.
+*----
+EDITION := EDI: FLUX LIBRARY TRACK ::
+  EDIT 4 COND  
+{%- for innerBoundary in groupStructure%} {{"\n    {:.6E}".format(innerBoundary)}} {% endfor %}   
+  MICR ISOTXS ALL SAVE  ;
+END: ;
+QUIT .

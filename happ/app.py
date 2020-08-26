@@ -2,10 +2,6 @@ import armi
 from armi.apps import App
 from armi import materials
 
-from terrapower.physics.neutronics.dragon import DragonPlugin
-
-from happ.plugin import HallamPhysicsPlugin
-
 
 class HallamApp(App):
     def __init__(self):
@@ -24,3 +20,7 @@ class HallamApp(App):
     @property
     def splashText(self):
         return "** Nick's Hallam App **"
+
+
+from terrapower.physics.neutronics.dragon import DragonPlugin
+from happ.plugin import HallamPhysicsPlugin

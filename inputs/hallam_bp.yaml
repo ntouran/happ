@@ -135,7 +135,7 @@ blocks:
         center hole: &center_hole
             # the void in the center tube
             shape: Circle
-            material: Void
+            material: Helium
             mult: center tube.mult
             Tinput: 20.0
             Thot: 400.0
@@ -846,3 +846,4 @@ nuclide flags:
     CM247: {burn: true, xs: true}
     DUMP1: {burn: true, xs: true}
     DUMP2: {burn: true, xs: true}
+    HE4:  {burn: false, xs: true}

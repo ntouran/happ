@@ -1,3 +1,9 @@
+"""
+The main Hallam application startup code.
+
+This will run if and only if the user invokes the Hallam application
+directly (but not when just using it as a plugin in a different app). 
+"""
 import sys
 import os
 
@@ -31,6 +37,7 @@ def buildPath():
 
 buildPath()
 
+# pylint: disable=wrong-import-position ; avoid circular imports
 import armi
 from armi.cli import ArmiCLI
 from happ import app

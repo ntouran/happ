@@ -1,4 +1,5 @@
 from armi import materials
+from armi.materials import material
 from armi.materials import graphite
 from armi.utils.units import getTc
 
@@ -190,3 +191,12 @@ class Graphite(graphite.Graphite):
         """Reduce density to comply with paper"""
         graphite.Graphite.setDefaultMassFracs(self)
         self.p.refDens = 1.67
+
+
+class Helium(material.Fluid):
+    name = "Helium"
+
+    def setDefaultMassFracs(self):
+        """Helium"""
+        self.setMassFrac("HE4", 1.0)
+        self.p.refDens = 0.001
