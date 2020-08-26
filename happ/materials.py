@@ -20,10 +20,10 @@ class UMo(materials.FuelMaterial):
 
     def setDefaultMassFracs(self):
         """Set mass fracs and density from Table 2 in Aronchick"""
+        enrich = 0.036
         self.setMassFrac("MO", 0.1)
-        self.setMassFrac("MO", 0.1)
-        self.setMassFrac("U235", 0.036 * 0.9)
-        self.setMassFrac("U238", (1.0 - 0.036) * 0.9)
+        self.setMassFrac("U235", enrich * 0.9)
+        self.setMassFrac("U238", (1.0 - enrich) * 0.9)
         self.p.refDens = 17.1
 
     def applyInputParams(self, U235_wt_frac=None, *args, **kwargs):

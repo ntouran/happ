@@ -1,5 +1,6 @@
 """A subclass of the Dragon lattice physics plugin's interface that runs Hallam XS"""
 from armi import runLog
+from armi.reactor.flags import Flags
 
 from terrapower.physics.neutronics.dragon import dragonInterface
 from terrapower.physics.neutronics.dragon import dragonWriter
@@ -33,7 +34,13 @@ class HallamLatticeInterface(dragonInterface.DragonInterface):
         """
         basicFuelDesign = self.o.r.blueprints.blockDesigns["basic fuel"]
         basicFuel = basicFuelDesign.construct(
-            self.o.cs, self.o.r.blueprints, 0, 1, 10, "A", {}
+            self.o.cs,
+            self.o.r.blueprints,
+            0,
+            1,
+            height=1,
+            xsType="A",
+            materialInput={},
         )
         return [basicFuel]
 
@@ -66,7 +73,10 @@ class HallamDragonWriter(dragonWriter.DragonWriterHomogenized):
 
     def _makeGeomSplits(self):
         """Say how many times to split each ring"""
-        splits = [1 for _obj in self.armiObjs]
+        splits = [
+            5 if obj.hasFlags([Flags.FUEL, Flags.MODERATOR]) else 1
+            for obj in self.armiObjs
+        ]
         return splits
 
 

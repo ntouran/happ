@@ -37,6 +37,7 @@ from armi.reactor.converters import blockConverters
 from armi.reactor.components import Component
 from armi.reactor import blocks
 from armi.reactor import components
+from armi.utils import flags
 
 
 @dataclass
@@ -71,8 +72,9 @@ class HallamUnitCellConverter(blockConverters.BlockConverter):
         Height and inner radius will be added during conversion.
         """
         sbn = self._sourceBlock.getComponentByName
+        height = self._sourceBlock.getHeight()
         self.ringSpecs = [
-            RingSpec(components=[sbn("center hole"),]),
+            RingSpec(components=[sbn("center hole"),], heightCm=height),
             RingSpec(
                 components=[
                     sbn("center tube"),
@@ -81,13 +83,18 @@ class HallamUnitCellConverter(blockConverters.BlockConverter):
                     sbn("clad"),
                     sbn("bond"),
                     sbn("coolant"),
-                ]
+                ],
+                heightCm=height,
             ),
-            RingSpec(components=[sbn("process tube")]),
+            RingSpec(components=[sbn("process tube")], heightCm=height),
             RingSpec(
-                components=[sbn("moderator coolant annulus"), sbn("moderator clad")]
+                components=[sbn("moderator coolant annulus"), sbn("moderator clad")],
+                heightCm=height,
             ),
-            RingSpec(components=[sbn("moderator"), sbn("moderator coolant gap")]),
+            RingSpec(
+                components=[sbn("moderator"), sbn("moderator coolant gap")],
+                heightCm=height,
+            ),
         ]
 
     def convert(self):
@@ -106,8 +113,10 @@ def _makeRing(ringSpec: RingSpec):
     """Given a ring specification, make a circle component representing it."""
 
     blender = blocks.Block(name="blender")
+    flag = flags.Flag()
     for c in ringSpec.components:
         blender.add(components.UnshapedComponent.fromComponent(c))
+        flag |= c.p.flags
 
     area = blender.getVolume() / ringSpec.heightCm * ringSpec.fraction
 
@@ -125,6 +134,7 @@ def _makeRing(ringSpec: RingSpec):
         id=ringSpec.innerDiamCm,
         mult=1,
     )
+    ring.p.flags = flag
     # here we lose a bit of identity of the constituents.
     # it would be a bit nicer if we could add components to components
     nDensities = blender.getNumberDensities()

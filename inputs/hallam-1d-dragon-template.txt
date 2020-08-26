@@ -3,8 +3,9 @@
 *----
 LINKED_LIST
   LIBRARY HALLAMS HALLAM TRACKS TRACK PIJ FLUX EDITION ;
+SEQ_ASCII cell.ps ;
 MODULE
-   LIB: GEO: SYBILT: SHI: ASM: FLU: EDI: END: ;
+   LIB: GEO: PSP: SYBILT: NXT: SHI: ASM: FLU: EDI: END: ;
 *----
 *  No depletion performed.
 *----
@@ -34,7 +35,8 @@ HALLAM := GEO: HALLAMS ::
 *  Tracking calculation for Self-Shielding
 *----
 TRACKS := SYBILT: HALLAMS  ::
-  TITLE '1D Self-Shielding Tracking Calculation' ;
+  TITLE '1D Self-Shielding Tracking Calculation' 
+  EDIT 1 MAXR {{mixtures|length}} ;
 *----
 * Self Shielding Calculation
 *    * LEVEL 2 applies Nordheim (PIC) distributed self-shielding mode and
@@ -52,7 +54,14 @@ LIBRARY := SHI: LIBRARY TRACKS :: EDIT 0 NOLJ LEVEL 2 ;
 *      shielding tracking calculation to reduce the self shielding calculation time.
 *----
 TRACK := SYBILT: HALLAM  ::
-  TITLE '1D Transport Tracking Calculation' ;
+  TITLE '1D Transport Tracking Calculation' 
+  EDIT 1 MAXR {{geomsplits|sum}} ;
+*---------------
+* Plot geometry (doesn't work with SYBILT)
+*---------------
+* cell.ps := PSP: TRACK ::
+*    FILL HSB
+*    TYPE REGION ;
 *----
 * Assembly Calculation
 *----
@@ -66,7 +75,8 @@ FLUX := FLU: PIJ LIBRARY TRACK :: TYPE {% if buckling -%} B B1 SIGS {%- else -%}
 *    * EDIT 4 will print fairly rich cross section information.
 *----
 EDITION := EDI: FLUX LIBRARY TRACK ::
-  EDIT 4 COND  
+* Merge the various ISOTXS files from each region into one
+  EDIT 4  MERGE COMP  COND 
 {%- for innerBoundary in groupStructure%} {{"\n    {:.6E}".format(innerBoundary)}} {% endfor %}   
   MICR ISOTXS ALL SAVE  ;
 END: ;

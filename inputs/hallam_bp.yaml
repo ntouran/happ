@@ -46,7 +46,7 @@ blocks:
             Tinput: 20.0
             Thot: 400.0
         moderator:  &moderator
-            # process tube holes are 4.4" diamater, or 2.2" radius
+            # process tube holes are 4.4" diameter, or 2.2" radius
             material: Graphite
             shape: ScallopedHex
             # "The graphite is a prism of hexagonal XS measuring 16 in across flats"
